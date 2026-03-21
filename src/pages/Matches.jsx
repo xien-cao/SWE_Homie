@@ -130,16 +130,46 @@ export default function Matches() {
                       <MapPin className="w-3 h-3" />{match.listing.address}
                     </p>
                   </div>
-                  <div className="absolute top-2 right-2 bg-orange-600/90 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {match.compatibility_score ?? "--"}% Match
+                  <div className="absolute top-2 right-2">
+                    <div className="relative w-14 h-14 flex items-center justify-center">
+                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 56 56">
+                        <circle cx="28" cy="28" r="23" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
+                        <circle
+                          cx="28" cy="28" r="23"
+                          fill="none"
+                          stroke={match.compatibility_score >= 70 ? "#22c55e" : match.compatibility_score >= 40 ? "#f97316" : "#ef4444"}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 23}`}
+                          strokeDashoffset={`${2 * Math.PI * 23 * (1 - (match.compatibility_score || 0) / 100)}`}
+                        />
+                      </svg>
+                      <span className="relative text-white font-bold text-xs leading-none text-center">
+                        {match.compatibility_score ?? "--"}<span className="font-normal opacity-80">%</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {(!isBuyer || !match.listing) && (
-                    <div className="w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold text-sm flex-shrink-0">
-                      {match.compatibility_score ?? "--"}%
+                    <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 56 56">
+                        <circle cx="28" cy="28" r="23" fill="#fff7ed" stroke="#fed7aa" strokeWidth="4" />
+                        <circle
+                          cx="28" cy="28" r="23"
+                          fill="none"
+                          stroke={match.compatibility_score >= 70 ? "#22c55e" : match.compatibility_score >= 40 ? "#f97316" : "#ef4444"}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 23}`}
+                          strokeDashoffset={`${2 * Math.PI * 23 * (1 - (match.compatibility_score || 0) / 100)}`}
+                        />
+                      </svg>
+                      <span className="relative text-slate-800 font-bold text-xs leading-none text-center">
+                        {match.compatibility_score ?? "--"}<span className="font-normal opacity-70">%</span>
+                      </span>
                     </div>
                   )}
                   <div>

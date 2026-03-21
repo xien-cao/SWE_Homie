@@ -16,7 +16,7 @@ export default function PropertyCard({ listing, lifeScore, scoreBreakdown, profi
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 max-w-md w-full mx-auto">
       {/* Image */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-52 overflow-hidden">
         <img src={mainPhoto} alt={listing.title} className="w-full h-full object-cover" />
         <div className="absolute top-3 left-3">
           <Badge className="bg-white/90 text-slate-800 backdrop-blur-sm font-medium">
@@ -38,8 +38,8 @@ export default function PropertyCard({ listing, lifeScore, scoreBreakdown, profi
                 style={{ transition: "stroke-dashoffset 0.6s ease" }}
               />
             </svg>
-            <span className="relative text-white font-bold text-xs leading-none text-center">
-              {lifeScore != null ? lifeScore : "--"}<br /><span className="font-normal opacity-80">%</span>
+            <span className="relative text-white font-bold text-xs leading-none whitespace-nowrap">
+              {lifeScore != null ? lifeScore : "--"}<span className="font-normal opacity-80">%</span>
             </span>
           </div>
         </div>

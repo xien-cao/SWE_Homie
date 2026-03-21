@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44, supabase } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { X, Heart, Loader2, SlidersHorizontal, MapPin, DollarSign } from "lucide-react";
+import { X, Heart, Loader2, SlidersHorizontal, MapPin, DollarSign, Brain } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropertyCard from "../components/swipe/PropertyCard";
 import AIWingmanChat from "../components/swipe/AIWingmanChat";
@@ -19,6 +19,7 @@ export default function SwipeDiscover() {
   const [loading, setLoading] = useState(true);
   const [swipeDir, setSwipeDir] = useState(null);
   const [hardCount, setHardCount] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -128,17 +129,50 @@ export default function SwipeDiscover() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Discover</h1>
-          <p className="text-sm text-slate-500">Swipe right to like, left to pass</p>
+          <h1 className="text-xl font-bold text-slate-900">Discover</h1>
+          <p className="text-xs text-slate-500">Swipe right to like, left to pass</p>
         </div>
-        <Link to={createPageUrl("LifestyleProfile")}>
-          <Button variant="outline" size="sm" className="gap-2">
-            <SlidersHorizontal className="w-4 h-4" /> Filters
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline" size="sm"
+            className="gap-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+            onClick={() => setChatOpen(o => !o)}
+          >
+            <Brain className="w-4 h-4" />
+            Ask AI Wingman
           </Button>
-        </Link>
+          <Link to={createPageUrl("LifestyleProfile")}>
+            <Button variant="outline" size="sm" className="gap-2">
+              <SlidersHorizontal className="w-4 h-4" /> Filters
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {chatOpen && !isEndOfStack && !isSeparator && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            className="mb-3 bg-white border border-slate-200 rounded-2xl shadow-lg p-4 max-w-lg mx-auto"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-semibold text-slate-700">AI Wingman</span>
+              </div>
+              <button onClick={() => setChatOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <AIWingmanChat listing={currentListing} profile={profile} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {isEndOfStack ? (
         <div className="flex justify-center">
@@ -181,69 +215,61 @@ export default function SwipeDiscover() {
           </motion.div>
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row items-start gap-6">
-          <div className="flex flex-col items-center w-full lg:w-auto">
-            {currentIndex < hardCount && (
-              <div className="mb-3 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">
-                Within your budget & location
-              </div>
-            )}
-            {currentIndex > hardCount && (
-              <div className="mb-3 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
-                Outside your hard criteria
-              </div>
-            )}
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key={currentListing.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{
-                  opacity: 1, scale: 1,
-                  x: swipeDir === "left" ? -400 : swipeDir === "right" ? 400 : 0,
-                  rotate: swipeDir === "left" ? -20 : swipeDir === "right" ? 20 : 0,
-                }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.7}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x > 100) handleSwipe("right");
-                  else if (info.offset.x < -100) handleSwipe("left");
-                }}
-                style={{ cursor: "grab" }}
-                whileDrag={{ cursor: "grabbing" }}
-              >
-                <PropertyCard
-                  listing={currentListing}
-                  lifeScore={currentListing.lifeScore}
-                  scoreBreakdown={currentListing.scoreBreakdown}
-                  profile={profile}
-                />
-              </motion.div>
-            </AnimatePresence>
-
-            <div className="w-full mt-4 lg:hidden">
-              <AIWingmanChat listing={currentListing} profile={profile} />
+        <div className="flex flex-col items-center gap-2 max-w-lg mx-auto">
+          {currentIndex < hardCount && (
+            <div className="text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">
+              Within your budget & location
             </div>
-
-            <div className="flex items-center gap-6 mt-6">
-              <Button variant="outline" size="lg" className="w-16 h-16 rounded-full border-2 border-red-200 hover:bg-red-50 p-0" onClick={() => handleSwipe("left")}>
-                <X className="w-7 h-7 text-red-500" />
-              </Button>
-              <Button size="lg" className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-400 p-0 shadow-lg shadow-green-500/30" onClick={() => handleSwipe("right")}>
-                <Heart className="w-7 h-7 text-white" />
-              </Button>
+          )}
+          {currentIndex > hardCount && (
+            <div className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+              Outside your hard criteria
             </div>
+          )}
 
-            <p className="text-xs text-slate-400 mt-3">{remaining} properties remaining</p>
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={currentListing.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{
+                opacity: 1, scale: 1,
+                x: swipeDir === "left" ? -400 : swipeDir === "right" ? 400 : 0,
+                rotate: swipeDir === "left" ? -15 : swipeDir === "right" ? 15 : 0,
+              }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.6}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 100) handleSwipe("right");
+                else if (info.offset.x < -100) handleSwipe("left");
+              }}
+              style={{ cursor: "grab", width: "100%" }}
+              whileDrag={{ cursor: "grabbing" }}
+            >
+              <PropertyCard
+                listing={currentListing}
+                lifeScore={currentListing.lifeScore}
+                scoreBreakdown={currentListing.scoreBreakdown}
+                profile={profile}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="flex items-center gap-5 mt-1">
+            <Button variant="outline" size="lg" className="w-14 h-14 rounded-full border-2 border-red-200 hover:bg-red-50 p-0" onClick={() => handleSwipe("left")}>
+              <X className="w-6 h-6 text-red-500" />
+            </Button>
+            <Button size="lg" className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 p-0 shadow-lg shadow-green-500/30" onClick={() => handleSwipe("right")}>
+              <Heart className="w-6 h-6 text-white" />
+            </Button>
           </div>
 
-          <div className="hidden lg:block w-96 flex-shrink-0">
-            <AIWingmanChat listing={currentListing} profile={profile} />
-          </div>
+          <p className="text-xs text-slate-400">{remaining} properties remaining</p>
         </div>
       )}
+
     </div>
   );
 }
