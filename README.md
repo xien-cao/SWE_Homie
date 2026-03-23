@@ -97,7 +97,7 @@ ONEMAP_PASSWORD=your_onemap_password
 
 Get credentials from:
 - Supabase: [supabase.com](https://supabase.com) → Project Settings → API
-- Gemini: [aistudio.google.com](https://aistudio.google.com)
+- Groq API: [console.groq.com](https://console.groq.com)
 - OneMap: [onemap.gov.sg](https://www.onemap.gov.sg) (register for free)
 
 ### 3. Database setup
